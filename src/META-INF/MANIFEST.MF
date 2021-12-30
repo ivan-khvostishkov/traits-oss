@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: net.nosocial.traits.Traits
+Class-Path: lib/forms.jar
+

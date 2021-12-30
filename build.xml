@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="traits" default="all">
+  
+
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <property name="skip.tests" value="true"/>
+
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="700m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/*.rbc/**"/>
+    <exclude name="**/*.yarb/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/__pycache__/**"/>    <exclude name="**/_svn/**"/>
+    <exclude name="**/vssver.scc/**"/>
+    <exclude name="**/vssver2.scc/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.egg"/>
+    <include name="*.zip"/>
+    <include name="*.war"/>
+    <include name="*.swc"/>
+    <include name="*.ear"/>
+    <include name="*.jar"/>
+    <include name="*.klib"/>
+    <include name="*.ane"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <exclude name="**/?*.java"/>
+    <exclude name="**/?*.form"/>
+    <exclude name="**/?*.class"/>
+    <exclude name="**/?*.groovy"/>
+    <exclude name="**/?*.scala"/>
+    <exclude name="**/?*.flex"/>
+    <exclude name="**/?*.kt"/>
+    <exclude name="**/?*.clj"/>
+  </patternset>
+
+  <!-- Project Libraries -->
+
+  <path id="library.forms.classpath">
+    <pathelement location="${basedir}/lib/forms.jar"/>
+  </path>
+
+  <!-- Modules -->
+  
+  
+  <!-- Module traits -->
+  
+  <dirname property="module.traits.basedir" file="${ant.file}"/>
+  
+  
+  
+  <property name="compiler.args.traits" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="traits.output.dir" value="${module.traits.basedir}/out/production/traits"/>
+  <property name="traits.testoutput.dir" value="${module.traits.basedir}/out/test/traits"/>
+  
+  <path id="traits.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="traits.module.production.classpath">
+    <path refid="library.forms.classpath"/>
+  </path>
+  
+  <path id="traits.runtime.production.module.classpath">
+    <pathelement location="${traits.output.dir}"/>
+    <path refid="library.forms.classpath"/>
+  </path>
+  
+  <path id="traits.module.classpath">
+    <pathelement location="${traits.output.dir}"/>
+    <path refid="library.forms.classpath"/>
+  </path>
+  
+  <path id="traits.runtime.module.classpath">
+    <pathelement location="${traits.testoutput.dir}"/>
+    <pathelement location="${traits.output.dir}"/>
+    <path refid="library.forms.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.traits">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.traits">
+    <patternset refid="excluded.from.module.traits"/>
+  </patternset>
+  
+  <path id="traits.module.sourcepath">
+    <dirset dir="${module.traits.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.traits" depends="compile.module.traits.production,compile.module.traits.tests" description="Compile module traits"/>
+  
+  <target name="compile.module.traits.production" description="Compile module traits; production classes">
+    <mkdir dir="${traits.output.dir}"/>
+    <javac destdir="${traits.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">
+      <compilerarg line="${compiler.args.traits}"/>
+      <bootclasspath refid="traits.module.bootclasspath"/>
+      <classpath refid="traits.module.production.classpath"/>
+      <src refid="traits.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.traits"/>
+    </javac>
+    
+    <copy todir="${traits.output.dir}">
+      <fileset dir="${module.traits.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.traits.tests" depends="compile.module.traits.production" description="compile module traits; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.traits" description="cleanup module">
+    <delete dir="${traits.output.dir}"/>
+    <delete dir="${traits.testoutput.dir}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+    <mkdir dir="${basedir}/lib"/>
+    <get dest="${basedir}/lib/forms.jar" src="https://search.maven.org/remotecontent?filepath=com/jgoodies/forms/1.2.1/forms-1.2.1.jar"/>
+  </target>
+  
+  <target name="clean" depends="clean.module.traits" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.traits" description="build all modules"/>
+  
+  <target name="init.artifacts">
+    <property name="artifacts.temp.dir" value="${basedir}/__artifacts_temp"/>
+    <property name="artifact.output.traits:jar" value="${basedir}"/>
+    <mkdir dir="${artifacts.temp.dir}"/>
+    <property name="temp.jar.path.traits.jar" value="${artifacts.temp.dir}/traits.jar"/>
+  </target>
+  
+  <target name="artifact.traits:jar" depends="init.artifacts, compile.module.traits" description="Build &#39;traits:jar&#39; artifact">
+    <property name="artifact.temp.output.traits:jar" value="${artifacts.temp.dir}/traits_jar"/>
+    <mkdir dir="${artifact.temp.output.traits:jar}"/>
+    <jar destfile="${temp.jar.path.traits.jar}" duplicate="preserve" filesetmanifest="merge">
+      <zipfileset dir="${traits.output.dir}"/>
+    </jar>
+    <copy file="${temp.jar.path.traits.jar}" tofile="${artifact.temp.output.traits:jar}/traits.jar"/>
+  </target>
+  
+  <target name="build.all.artifacts" depends="artifact.traits:jar" description="Build all artifacts">
+    <mkdir dir="${artifact.output.traits:jar}"/>
+    <copy todir="${artifact.output.traits:jar}">
+      <fileset dir="${artifact.temp.output.traits:jar}"/>
+    </copy>
+    
+    <!-- Delete temporary files -->
+    <delete dir="${artifacts.temp.dir}"/>
+  </target>
+  
+  <target name="all" depends="build.modules, build.all.artifacts" description="build all"/>
+</project>
