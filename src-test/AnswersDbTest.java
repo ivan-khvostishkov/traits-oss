@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author ikh
@@ -37,14 +39,21 @@ public class AnswersDbTest {
         AnsweredQuestions answeredQuestions = new AnsweredQuestions();
         answeredQuestions.add(new Question(new Behavior("Being curious")), Answer.YES);
         answeredQuestions.add(new Question(new Behavior("Recognizing effects of own actions")), Answer.UNCERTAIN);
+        answeredQuestions.add(new Question(new Behavior("!Reverse behavior")), Answer.YES);
         answersDb.save(answeredQuestions);
 
         AnswersDb updatedAnswersDb = new AnswersDb(answers);
-        AnsweredQuestions updatedQuestions = updatedAnswersDb.load();
-        assertEquals(2, updatedQuestions.getCount());
-        assertEquals("Being curious", updatedQuestions.getQuestionText(0));
-        assertEquals("Recognizing effects of own actions", updatedQuestions.getQuestionText(1));
-        assertEquals(Answer.YES, updatedQuestions.getQuestionAnswer(0));
-        assertEquals(Answer.UNCERTAIN, updatedQuestions.getQuestionAnswer(1));
+        AnsweredQuestions updatedAnswers = updatedAnswersDb.load();
+        assertEquals(3, updatedAnswers.getCount());
+        assertEquals("Being curious", updatedAnswers.getQuestionText(0));
+        assertEquals("Recognizing effects of own actions", updatedAnswers.getQuestionText(1));
+        assertEquals("Reverse behavior", updatedAnswers.getQuestionText(2));
+        assertEquals(Answer.YES, updatedAnswers.getQuestionAnswer(0));
+        assertEquals(Answer.UNCERTAIN, updatedAnswers.getQuestionAnswer(1));
+        assertEquals(Answer.YES, updatedAnswers.getQuestionAnswer(2));
+
+        assertFalse(updatedAnswers.getQuestion(0).getBehavior().isReverse());
+        assertTrue(updatedAnswers.getQuestion(2).getBehavior().isReverse());
+
     }
 }

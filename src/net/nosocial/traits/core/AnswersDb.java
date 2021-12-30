@@ -25,7 +25,7 @@ public class AnswersDb {
     public void save(AnsweredQuestions answeredQuestions) throws FileNotFoundException, UnsupportedEncodingException {
         try (PrintWriter writer = new PrintWriter(db, "UTF-8")) {
             for (int i = 0; i < answeredQuestions.getCount(); i++) {
-                writer.print(answeredQuestions.getQuestionText(i));
+                writer.print(answeredQuestions.getQuestionTextWithReverseIndicator(i));
                 writer.print(String.format(" [%s]", answeredQuestions.getQuestionAnswer(i).name()));
                 writer.println();
             }

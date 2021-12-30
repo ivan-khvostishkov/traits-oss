@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author ikh
@@ -41,15 +43,21 @@ public class QuestionsDbTest {
         ShuffledQuestions shuffledQuestions = new ShuffledQuestions();
         shuffledQuestions.add(new Question(new Behavior("Being curious")));
         shuffledQuestions.add(new Question(new Behavior("Recognizing effects of own actions")));
+        shuffledQuestions.add(new Question(new Behavior("!Reverse behavior")));
 
         questionsDb.save(shuffledQuestions);
 
         QuestionsDb updatedQuestionsDb = new QuestionsDb(questions);
         ShuffledQuestions updatedQuestions = updatedQuestionsDb.load();
 
-        assertEquals(2, updatedQuestions.getCount());
+        assertEquals(3, updatedQuestions.getCount());
 
         assertEquals("Being curious", updatedQuestions.getQuestionText(0));
         assertEquals("Recognizing effects of own actions", updatedQuestions.getQuestionText(1));
+        assertEquals("Reverse behavior", updatedQuestions.getQuestionText(2));
+
+        assertFalse(updatedQuestions.getQuestion(0).getBehavior().isReverse());
+        assertTrue(updatedQuestions.getQuestion(2).getBehavior().isReverse());
+
     }
 }

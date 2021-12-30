@@ -48,4 +48,8 @@ public class Question {
                 .replaceAll("‘", "'").replaceAll("’", "'")
                 .replaceAll("“", "\"").replaceAll("”", "\"");
     }
+
+    public String getTextWithReverseIndicator() {
+        return behavior.getTextWithReverseIndicator();
+    }
 }

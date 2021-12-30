@@ -5,11 +5,12 @@ package net.nosocial.traits.core;
  * @since 1/25/15
  */
 public class Behavior {
+    public static final String REVERSE_PREFIX = "!";
     private final String text;
     private final boolean reverse;
 
     public Behavior(String text) {
-        if (text.startsWith("!")) {
+        if (text.startsWith(REVERSE_PREFIX)) {
             this.text = text.substring(1);
             reverse = true;
         } else {
@@ -46,5 +47,14 @@ public class Behavior {
     @Override
     public int hashCode() {
         return text.hashCode();
+    }
+
+    public String getTextWithReverseIndicator() {
+        if (reverse) {
+            return REVERSE_PREFIX + text;
+        } else {
+            return text;
+        }
+
     }
 }

@@ -16,7 +16,7 @@ public class QuestionsDb {
     public void save(ShuffledQuestions shuffledQuestions) throws FileNotFoundException, UnsupportedEncodingException {
         try (PrintWriter writer = new PrintWriter(db, "UTF-8")) {
             for (int i = 0; i < shuffledQuestions.getCount(); i++) {
-                writer.print(shuffledQuestions.getQuestionText(i));
+                writer.print(shuffledQuestions.getQuestionTextWithBehaviorIndication(i));
                 writer.println();
             }
         }

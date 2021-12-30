@@ -29,6 +29,12 @@ public class AnsweredQuestions {
         return question.getText();
     }
 
+    public String getQuestionTextWithReverseIndicator(int i) {
+        Question question = questionList.get(i);
+        assert question != null;
+        return question.getTextWithReverseIndicator();
+    }
+
     public Answer getQuestionAnswer(int i) {
         return answerList.get(i);
     }

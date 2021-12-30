@@ -48,7 +48,7 @@ public class Traits {
 
         for (String s : argsList) {
             if (s.startsWith("--db=")) {
-                dbFile = args[0].substring(5);
+                dbFile = s.substring(5);
                 break;
             }
         }

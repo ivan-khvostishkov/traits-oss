@@ -42,4 +42,9 @@ public class ShuffledQuestions {
     public List<Question> getAll() {
         return questions;
     }
+
+    public String getQuestionTextWithBehaviorIndication(int i) {
+        Question q = questions.get(i);
+        return q.getTextWithReverseIndicator();
+    }
 }
