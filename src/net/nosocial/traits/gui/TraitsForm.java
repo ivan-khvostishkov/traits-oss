@@ -35,14 +35,7 @@ public class TraitsForm {
         profileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(mainPanel, traits == null ? "You answered 36 of 5271 questions for self.\n" +
-                                "\n" +
-                                "   3 +happy\n" +
-                                "   2 -rowdy\n" +
-                                "   2 -hypersensitive\n" +
-                                "\n" : traits.getProfileText(),
-                        traits == null ? "Profile — johndoe" : traits.getProfileName(),
-                        JOptionPane.PLAIN_MESSAGE);
+                displayProfileDialog();
             }
         });
         aboutButton.addActionListener(new ActionListener() {
@@ -107,6 +100,17 @@ public class TraitsForm {
         });
     }
 
+    private void displayProfileDialog() {
+        JOptionPane.showMessageDialog(mainPanel, traits == null ? "You answered 36 of 5271 questions for self.\n" +
+                        "\n" +
+                        "   3 +happy\n" +
+                        "   2 -rowdy\n" +
+                        "   2 -hypersensitive\n" +
+                        "\n" : traits.getProfileText(),
+                traits == null ? "Profile — self" : traits.getProfileName(),
+                JOptionPane.PLAIN_MESSAGE);
+    }
+
     private void handleAnswerThatChangesProfile(AnswerResult answerResult) {
         if (answerResult.isLevelUp()) {
             JOptionPane.showMessageDialog(mainPanel,
@@ -163,6 +167,7 @@ public class TraitsForm {
                     new String[]{"Back", "Profile"}, "Back");
 
             if (choice == 1 || choice == JOptionPane.CLOSED_OPTION) {
+                displayProfileDialog();
                 System.exit(0);
             }
 
