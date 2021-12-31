@@ -227,7 +227,7 @@ public class Traits {
                         System.out.println("i - behavior info / associated trait hint");
                         System.out.println("p - show profile");
                         System.out.println("b - back to the previous question");
-                        System.out.println("f - forward to the last question");
+                        System.out.println("f - fast-forward to the last question");
                         System.out.println("? - this help");
                         break;
                     case "i":
@@ -241,6 +241,7 @@ public class Traits {
                     case "s":
                         answerResult = profile.skipQuestion(question);
                         questionsDb.save(profile.getShuffledQuestions());
+                        answersDb.save(profile.getAnswers());
                         break;
                     case "y":
                         answerResult = answerYes();
@@ -258,7 +259,7 @@ public class Traits {
                         answerResult = new AnswerResult();
                         break;
                     case "f":
-                        profile.forward();
+                        goForward();
                         answerResult = new AnswerResult();
                         break;
                     default:
@@ -343,7 +344,7 @@ public class Traits {
     }
 
     public synchronized String getQuestionCountText() {
-        return String.format("Question %d of %d", profile.getAnsweredQuestionsCount() + 1,
+        return String.format("Question %d of %d", profile.getCurrentQuestionNumber(),
                 profile.getTotalQuestionsCount());
     }
 
@@ -379,5 +380,9 @@ public class Traits {
     public synchronized void goBack() {
         /* question = */
         profile.previousQuestion();
+    }
+
+    public synchronized void goForward() {
+        profile.forward();
     }
 }

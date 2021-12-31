@@ -79,6 +79,20 @@ public class TraitsForm {
                 TraitsForm.this.updateQuestion();
             }
         });
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                traits.goBack();
+                TraitsForm.this.updateQuestion();
+            }
+        });
+        button2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                traits.goForward();
+                TraitsForm.this.updateQuestion();
+            }
+        });
     }
 
     public static void main(String[] args) {
@@ -123,7 +137,7 @@ public class TraitsForm {
                     "Well done!", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
                     new String[]{"Back", "Profile"}, "Back");
 
-            if (choice == 1) {
+            if (choice == 1 || choice == JOptionPane.CLOSED_OPTION) {
                 System.exit(0);
             }
 
@@ -205,12 +219,12 @@ public class TraitsForm {
         panel3.setLayout(new FormLayout("fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow,fill:m:grow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow", "fill:d:grow,top:4dlu:noGrow,center:max(d;4px):noGrow"));
         mainPanel.add(panel3, cc.xy(1, 7, CellConstraints.DEFAULT, CellConstraints.CENTER));
         button1 = new JButton();
-        button1.setText("⇦");
+        button1.setText("←");
         button1.setToolTipText("Back to the previous question");
         panel3.add(button1, cc.xywh(3, 1, 1, 3, CellConstraints.DEFAULT, CellConstraints.CENTER));
         button2 = new JButton();
-        button2.setText("⇨");
-        button2.setToolTipText("Forward to the last question");
+        button2.setText("⇥");
+        button2.setToolTipText("Fast-forward to the last question");
         panel3.add(button2, cc.xywh(8, 1, 1, 3, CellConstraints.DEFAULT, CellConstraints.CENTER));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new FormLayout("fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):grow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow", "center:d:grow"));
@@ -225,7 +239,7 @@ public class TraitsForm {
         skipButton.setText("Skip");
         skipButton.setMnemonic('S');
         skipButton.setDisplayedMnemonicIndex(0);
-        skipButton.setToolTipText("Skip the question to answer at later time (random)");
+        skipButton.setToolTipText("Skip the question to answer at later time");
         panel4.add(skipButton, cc.xy(7, 1));
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new FormLayout("fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:82px:noGrow,left:6dlu:noGrow,fill:max(d;4px):grow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):grow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow", "center:d:grow"));

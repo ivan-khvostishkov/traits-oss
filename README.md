@@ -83,7 +83,7 @@ u - uncertain (doesn't change the level of the trait)
 i - behavior info / associated trait hint
 p - show profile
 b - back to the previous question
-f - forward towards the last question
+f - fast-forward towards the last question
 ? - this help
 
 Recognizing effects of own actions [s/y/n/u/i/p/b/f/?] ^C

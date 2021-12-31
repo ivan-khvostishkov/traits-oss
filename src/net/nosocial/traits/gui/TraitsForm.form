@@ -136,7 +136,7 @@
               <forms defaultalign-vert="false"/>
             </constraints>
             <properties>
-              <text value="⇦"/>
+              <text value="←"/>
               <toolTipText value="Back to the previous question"/>
             </properties>
           </component>
@@ -146,8 +146,8 @@
               <forms defaultalign-vert="false"/>
             </constraints>
             <properties>
-              <text value="⇨"/>
-              <toolTipText value="Forward to the last question"/>
+              <text value="⇥"/>
+              <toolTipText value="Fast-forward to the last question"/>
             </properties>
           </component>
         </children>
@@ -187,7 +187,7 @@
             </constraints>
             <properties>
               <text value="&amp;Skip"/>
-              <toolTipText value="Skip the question to answer at later time (random)"/>
+              <toolTipText value="Skip the question to answer at later time"/>
             </properties>
           </component>
         </children>

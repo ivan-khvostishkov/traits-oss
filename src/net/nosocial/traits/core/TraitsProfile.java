@@ -33,6 +33,10 @@ public class TraitsProfile {
         if (isAlreadyAnswered(question)) {
             answers.replace(question, answer);
         } else {
+            Question currentQuestion = nextQuestion();
+            if (currentQuestion.equals(question)) {
+                num++;
+            }
             answers.add(question, answer);
         }
 
@@ -84,7 +88,10 @@ public class TraitsProfile {
 
     public AnswerResult skipQuestion(Question question) {
         if (isAlreadyAnswered(question)) {
+            assert numBack > 0;
             answers.remove(question);
+            num--;
+            numBack--;
         }
         questions = new ShuffledQuestions(questionSkipper.skip(questions.getAll(), question));
         AnswerResult answerResult = new AnswerResult();
@@ -149,5 +156,9 @@ public class TraitsProfile {
 
     public void forward() {
         numBack = 0;
+    }
+
+    public int getCurrentQuestionNumber() {
+        return getAnsweredQuestionsCount() + 1 - numBack;
     }
 }

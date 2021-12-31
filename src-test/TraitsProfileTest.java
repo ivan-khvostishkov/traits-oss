@@ -185,7 +185,6 @@ public class TraitsProfileTest {
         assertEquals(1, traitsProfile.getLevel());
         assertEquals(2, traitsProfile.getAnsweredQuestionsCount());
 
-
         question = traitsProfile.previousQuestion();
         assertEquals("Defacing property", question.getText());
 
