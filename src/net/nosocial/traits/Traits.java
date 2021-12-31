@@ -135,17 +135,23 @@ public class Traits {
     private void displayProfile() {
         System.out.println();
         displaySummary();
-        PersonalTraits personalTraits = profile.getPersonalTraits();
-        List<PersonalTrait> personalTraitsList = personalTraits.getSorted();
+        List<PersonalTrait> personalTraitsList = profile.getSortedTraits();
         if (personalTraitsList.isEmpty()) {
             return;
         }
+
         System.out.println();
-        for (PersonalTrait personalTrait : personalTraitsList) {
-            System.out.printf("%4d %s%s%n", personalTrait.getLevel(),
+        System.out.println(getLevelsText(profile));
+    }
+
+    private String getLevelsText(TraitsProfile profile) {
+        StringBuilder result = new StringBuilder();
+        for (PersonalTrait personalTrait : profile.getSortedTraits()) {
+            result.append(String.format("%4d %s%s%n", personalTrait.getLevel(),
                     personalTrait.getTraitSignChar(),
-                    personalTrait.getTraitName().toLowerCase());
+                    personalTrait.getTraitName().toLowerCase()));
         }
+        return result.toString();
     }
 
     private void init(String profileName) throws IOException {
@@ -180,8 +186,12 @@ public class Traits {
     }
 
     private void displaySummary() {
-        System.out.printf("You answered %d out of %d questions for %s and discovered %d traits out of %d." +
-                        " Profile level is %d.%n",
+        System.out.println(getSummaryText());
+    }
+
+    private String getSummaryText() {
+        return String.format("You answered %d out of %d questions for %s and discovered %d traits out of %d." +
+                        " Profile level is %d.",
                 profile.getAnsweredQuestionsCount(), profile.getTotalQuestionsCount(), profile.getName(),
                 profile.getPersonalTraitsCount(), traits.getCount(),
                 profile.getLevel());
@@ -219,11 +229,7 @@ public class Traits {
                         break;
                     case "i":
                         System.out.println();
-                        SimilarTraits similarTraits = traits.getTraitsByBehavior(question.getBehavior());
-                        for (Trait trait : similarTraits.getTraits()) {
-                            System.out.printf("This behavior is associated with %s trait (%s).%n",
-                                    trait.getName(), trait.isPositive() ? "positive" : "negative");
-                        }
+                        System.out.println(getBehaviorInfo());
                         break;
                     case "p":
                         displayProfile();
@@ -302,5 +308,28 @@ public class Traits {
                 throw new IllegalStateException("Cannot create answers file " + answersFile.getAbsolutePath());
             }
         }
+    }
+
+    public String getProfileName() {
+        return profile.getName();
+    }
+
+    public String getCurrentQuestionText() {
+        return profile.nextQuestion().getText();
+    }
+
+    public String getProfileText() {
+        return getSummaryText() + "\n\n" + getLevelsText(profile);
+    }
+
+    public String getBehaviorInfo() {
+        Question question = profile.nextQuestion();
+        SimilarTraits similarTraits = traits.getTraitsByBehavior(question.getBehavior());
+        StringBuilder sb = new StringBuilder();
+        for (Trait trait : similarTraits.getTraits()) {
+            sb.append(String.format("This behavior is associated with %s trait (%s).%n",
+                    trait.getName(), trait.isPositive() ? "positive" : "negative"));
+        }
+        return sb.toString();
     }
 }

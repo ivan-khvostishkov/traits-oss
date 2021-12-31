@@ -129,7 +129,7 @@ public class TraitsProfile {
         return getSortedTraits().size();
     }
 
-    private List<PersonalTrait> getSortedTraits() {
+    public List<PersonalTrait> getSortedTraits() {
         return getPersonalTraits().getSorted();
     }
 

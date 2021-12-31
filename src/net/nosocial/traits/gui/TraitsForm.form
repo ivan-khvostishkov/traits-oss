@@ -99,7 +99,7 @@
               <forms/>
             </constraints>
             <properties>
-              <font size="18"/>
+              <font size="16"/>
               <horizontalAlignment value="0"/>
               <horizontalTextPosition value="0"/>
               <text value="Question 37 of 5271"/>
@@ -234,7 +234,7 @@
               <toolTipText value="About this app"/>
             </properties>
           </component>
-          <component id="866e3" class="javax.swing.JLabel">
+          <component id="866e3" class="javax.swing.JLabel" binding="profileLabel">
             <constraints>
               <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
               <forms/>
@@ -246,7 +246,7 @@
           </component>
         </children>
       </grid>
-      <component id="90e93" class="javax.swing.JTextPane" binding="pFontFamilySansTextPane" default-binding="true">
+      <component id="90e93" class="javax.swing.JTextPane" binding="questionTextPane">
         <constraints>
           <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="50"/>

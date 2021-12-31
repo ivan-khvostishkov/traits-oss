@@ -23,19 +23,23 @@ public class TraitsForm {
     private JButton aboutButton;
     private JButton button1;
     private JButton button2;
-    private JTextPane pFontFamilySansTextPane;
+    private JTextPane questionTextPane;
+    private JLabel profileLabel;
+
+    Traits traits;
 
 
     public TraitsForm() {
         profileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(mainPanel, "You answered 36 of 5271 questions for self.\n" +
+                System.out.println(Thread.currentThread().getName());
+                JOptionPane.showMessageDialog(mainPanel, traits == null ? "You answered 36 of 5271 questions for self.\n" +
                         "\n" +
                         "   3 +happy\n" +
                         "   2 -rowdy\n" +
                         "   2 -hypersensitive\n" +
-                        "\n", "Profile — johndoe", JOptionPane.PLAIN_MESSAGE);
+                        "\n" : traits.getProfileText(), "Profile — johndoe", JOptionPane.PLAIN_MESSAGE);
             }
         });
         aboutButton.addActionListener(new ActionListener() {
@@ -52,8 +56,10 @@ public class TraitsForm {
         infoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(mainPanel, "This behavior is associated with SOCIALLY RESPONSIBLE trait (positive).\n\n",
-                        "Behavior info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(mainPanel,
+                        traits == null ? "This behavior is associated with SOCIALLY RESPONSIBLE trait (positive).\n\n"
+                                : traits.getBehaviorInfo(),
+                        "Behavior info", JOptionPane.PLAIN_MESSAGE);
             }
         });
     }
@@ -68,8 +74,29 @@ public class TraitsForm {
     }
 
     public static void answerLoop(Traits traits) {
+        System.out.println(Thread.currentThread().getName());
         JFrame frame = new JFrame("NSN Traits v2.0 — " + traits.databaseFile());
-        frame.setContentPane(new TraitsForm().mainPanel);
+
+        TraitsForm traitsForm = new TraitsForm();
+        traitsForm.profileLabel.setText(traits.getProfileName());
+        traitsForm.questionTextPane.setText(String.format("<html>\n" +
+                "  <head>\n" +
+                "    <style type=\"text/css\">\n" +
+                "      <!--\n" +
+                "        p { font-family: sans-serif }\n" +
+                "      -->\n" +
+                "    </style>\n" +
+                "    \n" +
+                "  </head>\n" +
+                "  <body>\n" +
+                "    <p style=\"margin-top: 0\">\n" +
+                "      <font size=\"18\">%s</font>\n" +
+                "    </p>\n" +
+                "  </body>\n" +
+                "</html>\n", traits.getCurrentQuestionText()));
+        traitsForm.traits = traits;
+
+        frame.setContentPane(traitsForm.mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setLocationRelativeTo(null); // center
@@ -122,7 +149,7 @@ public class TraitsForm {
         panel2.setLayout(new FormLayout("fill:d:grow", "center:d:grow"));
         mainPanel.add(panel2, cc.xy(1, 15));
         final JLabel label1 = new JLabel();
-        Font label1Font = this.$$$getFont$$$(null, -1, 18, label1.getFont());
+        Font label1Font = this.$$$getFont$$$(null, -1, 16, label1.getFont());
         if (label1Font != null) label1.setFont(label1Font);
         label1.setHorizontalAlignment(0);
         label1.setHorizontalTextPosition(0);
@@ -165,19 +192,19 @@ public class TraitsForm {
         aboutButton.setText("About");
         aboutButton.setToolTipText("About this app");
         panel5.add(aboutButton, cc.xy(3, 1));
-        final JLabel label2 = new JLabel();
-        Font label2Font = this.$$$getFont$$$(null, -1, 16, label2.getFont());
-        if (label2Font != null) label2.setFont(label2Font);
-        label2.setText("johndoe");
-        panel5.add(label2, cc.xy(7, 1));
-        pFontFamilySansTextPane = new JTextPane();
-        pFontFamilySansTextPane.setContentType("text/html");
-        pFontFamilySansTextPane.setMargin(new Insets(30, 30, 30, 30));
-        pFontFamilySansTextPane.setMinimumSize(new Dimension(700, 150));
-        pFontFamilySansTextPane.setOpaque(false);
-        pFontFamilySansTextPane.setPreferredSize(new Dimension(1100, 150));
-        pFontFamilySansTextPane.setText("<html>\n  <head>\n    <style type=\"text/css\">\n      <!--\n        p { font-family: sans-serif }\n      -->\n    </style>\n    \n  </head>\n  <body>\n    <p style=\"margin-top: 0\">\n      <font size=\"18\">Taking responsibility for other people (watching a \n      friend to make sure she gets home safely)</font>\n    </p>\n  </body>\n</html>\n");
-        mainPanel.add(pFontFamilySansTextPane, cc.xy(1, 9, CellConstraints.FILL, CellConstraints.FILL));
+        profileLabel = new JLabel();
+        Font profileLabelFont = this.$$$getFont$$$(null, -1, 16, profileLabel.getFont());
+        if (profileLabelFont != null) profileLabel.setFont(profileLabelFont);
+        profileLabel.setText("johndoe");
+        panel5.add(profileLabel, cc.xy(7, 1));
+        questionTextPane = new JTextPane();
+        questionTextPane.setContentType("text/html");
+        questionTextPane.setMargin(new Insets(30, 30, 30, 30));
+        questionTextPane.setMinimumSize(new Dimension(700, 150));
+        questionTextPane.setOpaque(false);
+        questionTextPane.setPreferredSize(new Dimension(1100, 150));
+        questionTextPane.setText("<html>\n  <head>\n    <style type=\"text/css\">\n      <!--\n        p { font-family: sans-serif }\n      -->\n    </style>\n    \n  </head>\n  <body>\n    <p style=\"margin-top: 0\">\n      <font size=\"18\">Taking responsibility for other people (watching a \n      friend to make sure she gets home safely)</font>\n    </p>\n  </body>\n</html>\n");
+        mainPanel.add(questionTextPane, cc.xy(1, 9, CellConstraints.FILL, CellConstraints.FILL));
     }
 
     /**
