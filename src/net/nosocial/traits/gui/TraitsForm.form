@@ -130,7 +130,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="f81f5" class="javax.swing.JButton" binding="button1" default-binding="true">
+          <component id="f81f5" class="javax.swing.JButton" binding="backButton">
             <constraints>
               <grid row="0" column="2" row-span="3" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
               <forms defaultalign-vert="false"/>
@@ -140,7 +140,7 @@
               <toolTipText value="Back to the previous question"/>
             </properties>
           </component>
-          <component id="67c1b" class="javax.swing.JButton" binding="button2" default-binding="true">
+          <component id="67c1b" class="javax.swing.JButton" binding="forwardButton">
             <constraints>
               <grid row="0" column="7" row-span="3" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
               <forms defaultalign-vert="false"/>

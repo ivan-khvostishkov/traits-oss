@@ -22,8 +22,8 @@ public class TraitsForm {
     private JButton infoButton;
     private JButton skipButton;
     private JButton aboutButton;
-    private JButton button1;
-    private JButton button2;
+    private JButton backButton;
+    private JButton forwardButton;
     private JTextPane questionTextPane;
     private JLabel profileLabel;
     private JLabel questionCountLabel;
@@ -64,35 +64,60 @@ public class TraitsForm {
             @Override
             public void actionPerformed(ActionEvent e) {
                 AnswerResult answerResult = traits.answerYes();
-
-                if (answerResult.isLevelUp()) {
-                    JOptionPane.showMessageDialog(mainPanel,
-                            traits.getLevelUpMessage(),
-                            "New profile level!", JOptionPane.PLAIN_MESSAGE);
-                }
-                if (answerResult.isNewTraitDiscovered()) {
-                    JOptionPane.showMessageDialog(mainPanel,
-                            traits.getNewTraitsMessage(answerResult),
-                            "New traits!", JOptionPane.PLAIN_MESSAGE);
-                }
-
+                handleAnswerThatChangesProfile(answerResult);
                 TraitsForm.this.updateQuestion();
             }
         });
-        button1.addActionListener(new ActionListener() {
+        noButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AnswerResult answerResult = traits.answerNo();
+                handleAnswerThatChangesProfile(answerResult);
+                TraitsForm.this.updateQuestion();
+            }
+        });
+        uncertainButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AnswerResult answerResult = traits.answerUncertain();
+                handleAnswerThatChangesProfile(answerResult);
+                TraitsForm.this.updateQuestion();
+            }
+        });
+        skipButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                traits.skipQuestion();
+                TraitsForm.this.updateQuestion();
+            }
+        });
+        backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 traits.goBack();
                 TraitsForm.this.updateQuestion();
             }
         });
-        button2.addActionListener(new ActionListener() {
+        forwardButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 traits.goForward();
                 TraitsForm.this.updateQuestion();
             }
         });
+    }
+
+    private void handleAnswerThatChangesProfile(AnswerResult answerResult) {
+        if (answerResult.isLevelUp()) {
+            JOptionPane.showMessageDialog(mainPanel,
+                    traits.getLevelUpMessage(),
+                    "New profile level!", JOptionPane.PLAIN_MESSAGE);
+        }
+        if (answerResult.isNewTraitDiscovered()) {
+            JOptionPane.showMessageDialog(mainPanel,
+                    traits.getNewTraitsMessage(answerResult),
+                    "New traits!", JOptionPane.PLAIN_MESSAGE);
+        }
     }
 
     public static void main(String[] args) {
@@ -218,14 +243,14 @@ public class TraitsForm {
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new FormLayout("fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow,fill:m:grow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow", "fill:d:grow,top:4dlu:noGrow,center:max(d;4px):noGrow"));
         mainPanel.add(panel3, cc.xy(1, 7, CellConstraints.DEFAULT, CellConstraints.CENTER));
-        button1 = new JButton();
-        button1.setText("←");
-        button1.setToolTipText("Back to the previous question");
-        panel3.add(button1, cc.xywh(3, 1, 1, 3, CellConstraints.DEFAULT, CellConstraints.CENTER));
-        button2 = new JButton();
-        button2.setText("⇥");
-        button2.setToolTipText("Fast-forward to the last question");
-        panel3.add(button2, cc.xywh(8, 1, 1, 3, CellConstraints.DEFAULT, CellConstraints.CENTER));
+        backButton = new JButton();
+        backButton.setText("←");
+        backButton.setToolTipText("Back to the previous question");
+        panel3.add(backButton, cc.xywh(3, 1, 1, 3, CellConstraints.DEFAULT, CellConstraints.CENTER));
+        forwardButton = new JButton();
+        forwardButton.setText("⇥");
+        forwardButton.setToolTipText("Fast-forward to the last question");
+        panel3.add(forwardButton, cc.xywh(8, 1, 1, 3, CellConstraints.DEFAULT, CellConstraints.CENTER));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new FormLayout("fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):grow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow", "center:d:grow"));
         mainPanel.add(panel4, cc.xy(1, 11));

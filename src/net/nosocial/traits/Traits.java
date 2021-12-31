@@ -176,10 +176,10 @@ public class Traits {
         if (questions.getCount() == 0) {
             System.out.printf("Creating the new profile for %s and randomizing the questions.%n%n", profileName);
             questions = new RandomQuestionsShuffler().shuffle(traits.getAllQuestions());
-            questionsDb.save(questions);
         }
 
         profile = new TraitsProfile(traits, questions, new RandomQuestionsSkipper());
+        saveQuestionsDb();
 
         if (answers.getCount() > 0) {
             profile.setAnswers(answers);
@@ -239,20 +239,16 @@ public class Traits {
                         displayProfile();
                         break;
                     case "s":
-                        answerResult = profile.skipQuestion(question);
-                        questionsDb.save(profile.getShuffledQuestions());
-                        answersDb.save(profile.getAnswers());
+                        answerResult = skipQuestion();
                         break;
                     case "y":
                         answerResult = answerYes();
                         break;
                     case "n":
-                        answerResult = profile.answerQuestion(question, Answer.NO);
-                        answersDb.save(profile.getAnswers());
+                        answerResult = answerNo();
                         break;
                     case "u":
-                        answerResult = profile.answerQuestion(question, Answer.UNCERTAIN);
-                        answersDb.save(profile.getAnswers());
+                        answerResult = answerUncertain();
                         break;
                     case "b":
                         goBack();
@@ -320,6 +316,22 @@ public class Traits {
         }
     }
 
+    private void saveAnswersDb() {
+        try {
+            answersDb.save(profile.getAnswers());
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private void saveQuestionsDb() {
+        try {
+            questionsDb.save(profile.getShuffledQuestions());
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     public synchronized String getProfileName() {
         return profile.getName();
     }
@@ -351,11 +363,29 @@ public class Traits {
     public synchronized AnswerResult answerYes() {
         Question question = profile.nextQuestion();
         AnswerResult answerResult = profile.answerQuestion(question, Answer.YES);
-        try {
-            answersDb.save(profile.getAnswers());
-        } catch (FileNotFoundException | UnsupportedEncodingException e) {
-            throw new IllegalStateException(e);
-        }
+        saveAnswersDb();
+        return answerResult;
+    }
+
+    public synchronized AnswerResult answerNo() {
+        Question question = profile.nextQuestion();
+        AnswerResult answerResult = profile.answerQuestion(question, Answer.NO);
+        saveAnswersDb();
+        return answerResult;
+    }
+
+    public synchronized AnswerResult answerUncertain() {
+        Question question = profile.nextQuestion();
+        AnswerResult answerResult = profile.answerQuestion(question, Answer.UNCERTAIN);
+        saveAnswersDb();
+        return answerResult;
+    }
+
+    public synchronized AnswerResult skipQuestion() {
+        Question question = profile.nextQuestion();
+        AnswerResult answerResult = profile.skipQuestion(question);
+        saveAnswersDb();
+        saveQuestionsDb();
         return answerResult;
     }
 
