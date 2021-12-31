@@ -66,6 +66,9 @@ public class TraitsProfile {
     }
 
     public boolean hasMoreQuestions() {
+        if (numBack > 0) {
+            return true;
+        }
         if (num >= questions.getCount()) {
             return false;
         }

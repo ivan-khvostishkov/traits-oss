@@ -3,7 +3,6 @@ package net.nosocial.traits;
 import net.nosocial.traits.core.*;
 import net.nosocial.traits.gui.TraitsForm;
 
-import javax.swing.*;
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.Objects;
 public class Traits {
     private static final String DEFAULT_PROFILE_NAME = "self";
 
-    public static String dbFile = null;
+    private static String dbFile = null;
 
     private File questionsFile;
     private File answersFile;
@@ -48,7 +47,7 @@ public class Traits {
 
         for (String s : argsList) {
             if (s.startsWith("--db=")) {
-                dbFile = s.substring(5);
+                setDatabase(s.substring(5));
                 break;
             }
         }
@@ -69,8 +68,10 @@ public class Traits {
         if (argsList.contains("--profile")) {
             traits.displayProfile();
         } else if (argsList.contains("--cli")) {
+            traits.displaySummary();
             traits.answerLoop();
         } else {
+            traits.displaySummary();
             TraitsForm.answerLoop(traits);
         }
     }
@@ -97,11 +98,11 @@ public class Traits {
                 "For help and support contact traits@nosocial.net.\n");
     }
 
-    public static void displayVersion() {
+    private static void displayVersion() {
         System.out.println("v2.0.23");
     }
 
-    public static void displayHelp() {
+    private static void displayHelp() {
         System.out.println("Usage: traits.jar [options] [profile_name]\n" +
                 "\n" +
                 "Options:\n" +
@@ -125,15 +126,19 @@ public class Traits {
         if (result.trim().isEmpty()) {
             result = DEFAULT_PROFILE_NAME;
         }
+        System.out.println();
         return result;
     }
 
-    public String databaseFile() {
+    public static synchronized String databaseFile() {
         return dbFile;
     }
 
+    public static synchronized void setDatabase(String dbFile) {
+        Traits.dbFile = dbFile;
+    }
+
     private void displayProfile() {
-        System.out.println();
         displaySummary();
         List<PersonalTrait> personalTraitsList = profile.getSortedTraits();
         if (personalTraitsList.isEmpty()) {
@@ -154,11 +159,12 @@ public class Traits {
         return result.toString();
     }
 
-    private void init(String profileName) throws IOException {
+    private synchronized void init(String profileName) throws IOException {
         initDB(profileName);
 
         TraitsDb traitsDb;
-        traitsDb = new TraitsDb(Objects.requireNonNullElse(dbFile, "traits.db"), true);
+        traitsDb = new TraitsDb(Objects.requireNonNullElse(Traits.databaseFile(),
+                "traits.db"), true);
         traits = traitsDb.loadAll();
 
         questionsDb = new QuestionsDb(questionsFile);
@@ -168,6 +174,7 @@ public class Traits {
         AnsweredQuestions answers = answersDb.load();
 
         if (questions.getCount() == 0) {
+            System.out.printf("Creating the new profile for %s and randomizing the questions.%n%n", profileName);
             questions = new RandomQuestionsShuffler().shuffle(traits.getAllQuestions());
             questionsDb.save(questions);
         }
@@ -179,13 +186,9 @@ public class Traits {
         }
 
         profile.setName(profileName);
-
-        if (profile.hasMoreQuestions()) {
-            displaySummary();
-        }
     }
 
-    private void displaySummary() {
+    private synchronized void displaySummary() {
         System.out.println(getSummaryText());
     }
 
@@ -197,7 +200,7 @@ public class Traits {
                 profile.getLevel());
     }
 
-    public void answerLoop() throws IOException {
+    private void answerLoop() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         while (profile.hasMoreQuestions()) {
             Question question = profile.nextQuestion();
@@ -224,7 +227,7 @@ public class Traits {
                         System.out.println("i - behavior info / associated trait hint");
                         System.out.println("p - show profile");
                         System.out.println("b - back to the previous question");
-                        System.out.println("f - forward towards the last question");
+                        System.out.println("f - forward to the last question");
                         System.out.println("? - this help");
                         break;
                     case "i":
@@ -232,6 +235,7 @@ public class Traits {
                         System.out.println(getBehaviorInfo());
                         break;
                     case "p":
+                        System.out.println();
                         displayProfile();
                         break;
                     case "s":
@@ -239,8 +243,7 @@ public class Traits {
                         questionsDb.save(profile.getShuffledQuestions());
                         break;
                     case "y":
-                        answerResult = profile.answerQuestion(question, Answer.YES);
-                        answersDb.save(profile.getAnswers());
+                        answerResult = answerYes();
                         break;
                     case "n":
                         answerResult = profile.answerQuestion(question, Answer.NO);
@@ -251,8 +254,7 @@ public class Traits {
                         answersDb.save(profile.getAnswers());
                         break;
                     case "b":
-                        /* question = */
-                        profile.previousQuestion();
+                        goBack();
                         answerResult = new AnswerResult();
                         break;
                     case "f":
@@ -268,21 +270,28 @@ public class Traits {
 
             if (answerResult.isLevelUp()) {
                 System.out.println();
-                System.out.printf("Congratulations, level up! New profile level is %d.%n",
-                        profile.getLevel());
+                System.out.println(getLevelUpMessage());
             }
             if (answerResult.isNewTraitDiscovered()) {
                 System.out.println();
-                System.out.printf("Congratulations, new traits(s) discovered: %s%n",
-                        String.join(", ", answerResult.getNewTraitsAsStrings()));
+                System.out.println(getNewTraitsMessage(answerResult));
             }
         }
 
-        // TODO: how to roll back the last question
+        if (!profile.hasMoreQuestions()) {
+            System.out.print(getProfileCompleteMessage() + "\n\n" +
+                    "Do you want to get back to review the answers or see the final profile? [b/p] ");
+            String exitAnswer = reader.readLine();
+            if (exitAnswer.equals("b")) {
+                goBack();
+                answerLoop(); // recursive workaround
+                return;
+            }
+        }
+
         displayProfile();
         System.out.println();
-        System.out.println("No more questions. Profile complete!");
-        reader.readLine();
+        System.out.println(getProfileCompleteMessage());
     }
 
     private void initDB(String profileName) throws IOException {
@@ -310,19 +319,19 @@ public class Traits {
         }
     }
 
-    public String getProfileName() {
+    public synchronized String getProfileName() {
         return profile.getName();
     }
 
-    public String getCurrentQuestionText() {
+    public synchronized String getCurrentQuestionText() {
         return profile.nextQuestion().getText();
     }
 
-    public String getProfileText() {
+    public synchronized String getProfileText() {
         return getSummaryText() + "\n\n" + getLevelsText(profile);
     }
 
-    public String getBehaviorInfo() {
+    public synchronized String getBehaviorInfo() {
         Question question = profile.nextQuestion();
         SimilarTraits similarTraits = traits.getTraitsByBehavior(question.getBehavior());
         StringBuilder sb = new StringBuilder();
@@ -331,5 +340,44 @@ public class Traits {
                     trait.getName(), trait.isPositive() ? "positive" : "negative"));
         }
         return sb.toString();
+    }
+
+    public synchronized String getQuestionCountText() {
+        return String.format("Question %d of %d", profile.getAnsweredQuestionsCount() + 1,
+                profile.getTotalQuestionsCount());
+    }
+
+    public synchronized AnswerResult answerYes() {
+        Question question = profile.nextQuestion();
+        AnswerResult answerResult = profile.answerQuestion(question, Answer.YES);
+        try {
+            answersDb.save(profile.getAnswers());
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            throw new IllegalStateException(e);
+        }
+        return answerResult;
+    }
+
+    public synchronized String getLevelUpMessage() {
+        return String.format("Congratulations, level up! New profile level is %d.%n",
+                profile.getLevel());
+    }
+
+    public synchronized String getNewTraitsMessage(AnswerResult answerResult) {
+        return String.format("Congratulations, new traits(s) discovered: %s%n",
+                String.join(", ", answerResult.getNewTraitsAsStrings()));
+    }
+
+    public synchronized boolean noMoreQuestions() {
+        return !profile.hasMoreQuestions();
+    }
+
+    public synchronized String getProfileCompleteMessage() {
+        return "Congratulations! No more questions left. Traits profile is complete.";
+    }
+
+    public synchronized void goBack() {
+        /* question = */
+        profile.previousQuestion();
     }
 }

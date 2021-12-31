@@ -108,7 +108,10 @@ Profile level is 3.
 $ java -jar traits.jar --cli self
 Welcome to NSN Traits v2.0 - your daily assistant in learning a personality!
 
-Congratulations! No more questions left.
+You answered 5271 of 5271 questions for self and discovered 210 traits out of 210. 
+Profile level is 43.
+Congratulations! No more questions left. Traits profile is complete.
+
 Do you want to get back to review the answers or see the final profile? [b/p] p
 
 You answered 5271 of 5271 questions for self and discovered 210 traits out of 210. 

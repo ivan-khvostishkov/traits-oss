@@ -93,7 +93,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="8bd2d" class="javax.swing.JLabel">
+          <component id="8bd2d" class="javax.swing.JLabel" binding="questionCountLabel">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
               <forms/>
@@ -147,7 +147,7 @@
             </constraints>
             <properties>
               <text value="⇨"/>
-              <toolTipText value="Forward towards the last question"/>
+              <toolTipText value="Forward to the last question"/>
             </properties>
           </component>
         </children>
@@ -177,7 +177,7 @@
             </constraints>
             <properties>
               <text value="&amp;Info"/>
-              <toolTipText value="Give an info about traits associated with this behavior"/>
+              <toolTipText value="Give info about traits associated with this behavior"/>
             </properties>
           </component>
           <component id="cca85" class="javax.swing.JButton" binding="skipButton" default-binding="true">

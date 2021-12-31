@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 
 public class AboutForm {
     private JTextPane pFontFamilySansTextPane;
-    JPanel panel1;
+    private JPanel panel1;
     private JButton OKButton;
 
     public AboutForm() {
@@ -27,6 +27,15 @@ public class AboutForm {
         JFrame frame = new JFrame("NSN Traits v2.0 — About");
         frame.setContentPane(new AboutForm().panel1);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setLocationRelativeTo(null); // center
+        frame.setVisible(true);
+    }
+
+    public static void displayDialog() {
+        JFrame frame = new JFrame("NSN Traits v2.0 — About");
+        frame.setContentPane(new AboutForm().panel1);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.pack();
         frame.setLocationRelativeTo(null); // center
         frame.setVisible(true);

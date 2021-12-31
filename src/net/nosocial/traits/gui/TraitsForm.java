@@ -3,6 +3,7 @@ package net.nosocial.traits.gui;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import net.nosocial.traits.Traits;
+import net.nosocial.traits.core.AnswerResult;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
@@ -13,7 +14,7 @@ import java.awt.event.ActionListener;
 import java.util.Locale;
 
 public class TraitsForm {
-    JPanel mainPanel;
+    private JPanel mainPanel;
     private JButton uncertainButton;
     private JButton yesButton;
     private JButton noButton;
@@ -25,8 +26,9 @@ public class TraitsForm {
     private JButton button2;
     private JTextPane questionTextPane;
     private JLabel profileLabel;
+    private JLabel questionCountLabel;
 
-    Traits traits;
+    private Traits traits;
 
 
     public TraitsForm() {
@@ -34,22 +36,19 @@ public class TraitsForm {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(mainPanel, traits == null ? "You answered 36 of 5271 questions for self.\n" +
-                        "\n" +
-                        "   3 +happy\n" +
-                        "   2 -rowdy\n" +
-                        "   2 -hypersensitive\n" +
-                        "\n" : traits.getProfileText(), "Profile — johndoe", JOptionPane.PLAIN_MESSAGE);
+                                "\n" +
+                                "   3 +happy\n" +
+                                "   2 -rowdy\n" +
+                                "   2 -hypersensitive\n" +
+                                "\n" : traits.getProfileText(),
+                        traits == null ? "Profile — johndoe" : traits.getProfileName(),
+                        JOptionPane.PLAIN_MESSAGE);
             }
         });
         aboutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFrame frame = new JFrame("NSN Traits v2.0 — About");
-                frame.setContentPane(new AboutForm().panel1);
-                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                frame.pack();
-                frame.setLocationRelativeTo(null); // center
-                frame.setVisible(true);
+                AboutForm.displayDialog();
             }
         });
         infoButton.addActionListener(new ActionListener() {
@@ -58,7 +57,26 @@ public class TraitsForm {
                 JOptionPane.showMessageDialog(mainPanel,
                         traits == null ? "This behavior is associated with SOCIALLY RESPONSIBLE trait (positive).\n\n"
                                 : traits.getBehaviorInfo(),
-                        "Behavior info", JOptionPane.PLAIN_MESSAGE);
+                        "Traits info", JOptionPane.PLAIN_MESSAGE);
+            }
+        });
+        yesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AnswerResult answerResult = traits.answerYes();
+
+                if (answerResult.isLevelUp()) {
+                    JOptionPane.showMessageDialog(mainPanel,
+                            traits.getLevelUpMessage(),
+                            "New profile level!", JOptionPane.PLAIN_MESSAGE);
+                }
+                if (answerResult.isNewTraitDiscovered()) {
+                    JOptionPane.showMessageDialog(mainPanel,
+                            traits.getNewTraitsMessage(answerResult),
+                            "New traits!", JOptionPane.PLAIN_MESSAGE);
+                }
+
+                TraitsForm.this.updateQuestion();
             }
         });
     }
@@ -73,11 +91,47 @@ public class TraitsForm {
     }
 
     public static void answerLoop(Traits traits) {
-        JFrame frame = new JFrame("NSN Traits v2.0 — " + traits.databaseFile());
+        JFrame frame = new JFrame("NSN Traits v2.0 — " + Traits.databaseFile());
 
         TraitsForm traitsForm = new TraitsForm();
-        traitsForm.profileLabel.setText(traits.getProfileName());
-        traitsForm.questionTextPane.setText(String.format("<html>\n" +
+        traitsForm.traits = traits;
+
+        frame.setContentPane(traitsForm.mainPanel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setLocationRelativeTo(null); // center
+
+        traitsForm.updateProfileName();
+        traitsForm.updateQuestion();
+
+        frame.setVisible(true);
+    }
+
+    private void updateProfileName() {
+        profileLabel.setText(traits.getProfileName());
+    }
+
+    private void updateQuestion() {
+
+        if (traits.noMoreQuestions()) {
+            JFrame frame = (JFrame) SwingUtilities.getRoot(mainPanel);
+            frame.setVisible(false);
+
+            int choice = JOptionPane.showOptionDialog(mainPanel,
+                    traits.getProfileCompleteMessage() + "\n\n"
+                            + "Do you want to get back to review the answers or see the final profile?",
+                    "Well done!", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                    new String[]{"Back", "Profile"}, "Back");
+
+            if (choice == 1) {
+                System.exit(0);
+            }
+
+            traits.goBack();
+            frame.setVisible(true);
+        }
+
+        questionTextPane.setText(String.format("<html>\n" +
                 "  <head>\n" +
                 "    <style type=\"text/css\">\n" +
                 "      <!--\n" +
@@ -92,13 +146,7 @@ public class TraitsForm {
                 "    </p>\n" +
                 "  </body>\n" +
                 "</html>\n", traits.getCurrentQuestionText()));
-        traitsForm.traits = traits;
-
-        frame.setContentPane(traitsForm.mainPanel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setLocationRelativeTo(null); // center
-        frame.setVisible(true);
+        questionCountLabel.setText(traits.getQuestionCountText());
     }
 
     private void createUIComponents() {
@@ -146,13 +194,13 @@ public class TraitsForm {
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new FormLayout("fill:d:grow", "center:d:grow"));
         mainPanel.add(panel2, cc.xy(1, 15));
-        final JLabel label1 = new JLabel();
-        Font label1Font = this.$$$getFont$$$(null, -1, 16, label1.getFont());
-        if (label1Font != null) label1.setFont(label1Font);
-        label1.setHorizontalAlignment(0);
-        label1.setHorizontalTextPosition(0);
-        label1.setText("Question 37 of 5271");
-        panel2.add(label1, cc.xy(1, 1));
+        questionCountLabel = new JLabel();
+        Font questionCountLabelFont = this.$$$getFont$$$(null, -1, 16, questionCountLabel.getFont());
+        if (questionCountLabelFont != null) questionCountLabel.setFont(questionCountLabelFont);
+        questionCountLabel.setHorizontalAlignment(0);
+        questionCountLabel.setHorizontalTextPosition(0);
+        questionCountLabel.setText("Question 37 of 5271");
+        panel2.add(questionCountLabel, cc.xy(1, 1));
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new FormLayout("fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow,fill:m:grow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow", "fill:d:grow,top:4dlu:noGrow,center:max(d;4px):noGrow"));
         mainPanel.add(panel3, cc.xy(1, 7, CellConstraints.DEFAULT, CellConstraints.CENTER));
@@ -162,7 +210,7 @@ public class TraitsForm {
         panel3.add(button1, cc.xywh(3, 1, 1, 3, CellConstraints.DEFAULT, CellConstraints.CENTER));
         button2 = new JButton();
         button2.setText("⇨");
-        button2.setToolTipText("Forward towards the last question");
+        button2.setToolTipText("Forward to the last question");
         panel3.add(button2, cc.xywh(8, 1, 1, 3, CellConstraints.DEFAULT, CellConstraints.CENTER));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new FormLayout("fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):grow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow", "center:d:grow"));
@@ -171,7 +219,7 @@ public class TraitsForm {
         infoButton.setText("Info");
         infoButton.setMnemonic('I');
         infoButton.setDisplayedMnemonicIndex(0);
-        infoButton.setToolTipText("Give an info about traits associated with this behavior");
+        infoButton.setToolTipText("Give info about traits associated with this behavior");
         panel4.add(infoButton, cc.xy(3, 1));
         skipButton = new JButton();
         skipButton.setText("Skip");
