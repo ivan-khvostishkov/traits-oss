@@ -11,9 +11,8 @@ $ java -jar traits.jar
 Welcome to NSN Traits v2.0 - your daily assistant in learning a personality!
 
 Enter profile name [self]: 
-
-[screen shots]
 ```
+![](ScreenshotMain.png)
 
 ```
 $ java -jar traits.jar --help
@@ -68,7 +67,8 @@ Enter profile name [self]:
 
 Creating the new profile for self and randomizing the questions.
 
-You answered 0 of 5271 questions for self and discovered 0 traits out of 210. Profile level is 0.
+You answered 0 of 5271 questions for self and discovered 0 traits out of 210. 
+Profile level is 0.
 
 Staying connected with friends [s/y/n/u/i/p/b/f/?] y
 Recognizing effects of own actions [s/y/n/u/i/p/b/f/?] i
@@ -93,7 +93,8 @@ Recognizing effects of own actions [s/y/n/u/i/p/b/f/?] ^C
 $ java -jar traits.jar --profile self
 Welcome to NSN Traits v2.0 - your daily assistant in learning a personality!
 
-You answered 37 of 5271 questions for self and discovered 6 traits out of 210. Profile level is 3.
+You answered 37 of 5271 questions for self and discovered 6 traits out of 210. 
+Profile level is 3.
 
    3 +happy
    2 +socially responsible
@@ -110,7 +111,8 @@ Welcome to NSN Traits v2.0 - your daily assistant in learning a personality!
 Congratulations! No more questions left.
 Do you want to get back to review the answers or see the final profile? [b/p] p
 
-You answered 5271 of 5271 questions for self and discovered 210 traits out of 210. Profile level is 43.
+You answered 5271 of 5271 questions for self and discovered 210 traits out of 210. 
+Profile level is 43.
 
    43 +happy
    22 +socially responsible

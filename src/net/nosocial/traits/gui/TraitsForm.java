@@ -33,7 +33,6 @@ public class TraitsForm {
         profileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println(Thread.currentThread().getName());
                 JOptionPane.showMessageDialog(mainPanel, traits == null ? "You answered 36 of 5271 questions for self.\n" +
                         "\n" +
                         "   3 +happy\n" +
@@ -74,7 +73,6 @@ public class TraitsForm {
     }
 
     public static void answerLoop(Traits traits) {
-        System.out.println(Thread.currentThread().getName());
         JFrame frame = new JFrame("NSN Traits v2.0 — " + traits.databaseFile());
 
         TraitsForm traitsForm = new TraitsForm();
@@ -195,7 +193,7 @@ public class TraitsForm {
         profileLabel = new JLabel();
         Font profileLabelFont = this.$$$getFont$$$(null, -1, 16, profileLabel.getFont());
         if (profileLabelFont != null) profileLabel.setFont(profileLabelFont);
-        profileLabel.setText("johndoe");
+        profileLabel.setText("self");
         panel5.add(profileLabel, cc.xy(7, 1));
         questionTextPane = new JTextPane();
         questionTextPane.setContentType("text/html");

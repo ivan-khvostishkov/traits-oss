@@ -241,7 +241,7 @@
             </constraints>
             <properties>
               <font size="16"/>
-              <text value="johndoe"/>
+              <text value="self"/>
             </properties>
           </component>
         </children>

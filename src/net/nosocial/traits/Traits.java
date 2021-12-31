@@ -190,8 +190,8 @@ public class Traits {
     }
 
     private String getSummaryText() {
-        return String.format("You answered %d out of %d questions for %s and discovered %d traits out of %d." +
-                        " Profile level is %d.",
+        return String.format("You answered %d out of %d questions for %s and discovered %d traits out of %d.\n" +
+                        "Profile level is %d.",
                 profile.getAnsweredQuestionsCount(), profile.getTotalQuestionsCount(), profile.getName(),
                 profile.getPersonalTraitsCount(), traits.getCount(),
                 profile.getLevel());
