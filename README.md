@@ -1,3 +1,6 @@
+# Traits by NoSocial.Net
+**Traits by NoSocial.Net** (also known as NSN Traits v2.0) is a daily assistant in learning a personality. Answer as many questions as possible to get the personal profile of positive and negative traits. See running instrucitons for more details. 
+
 ### Building
 1. Get Apache Ant — https://ant.apache.org/bindownload.cgi 
 2. Compile
@@ -144,8 +147,13 @@ Defacing property [n]
 ```
 
 ```
+
 $ cat ~/.traits/self/questions
 Reacting inadequately to teasing
 !Disconnected from family
 ...
 ```
+
+## Support
+
+For help and support contact traits@nosocial.net
