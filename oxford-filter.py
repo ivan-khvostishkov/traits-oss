@@ -30,8 +30,8 @@ def create_batches(words, batch_size=500, overlap=250):
     
     return batches
 
-def send_to_nova(prompt, region='eu-west-1'):
-    """Send prompt to Amazon Nova Pro and return response"""
+def send_to_nova(prompt, region='us-east-1'):
+    """Send prompt to Amazon Nova Pro via inference profile and return response"""
     client = boto3.client('bedrock-runtime', region_name=region)
     
     try:
@@ -49,7 +49,7 @@ def send_to_nova(prompt, region='eu-west-1'):
         })
         
         response = client.invoke_model(
-            modelId='amazon.nova-pro-v1:0',
+            modelId='us.amazon.nova-pro-v1:0',
             body=body,
             contentType='application/json'
         )
