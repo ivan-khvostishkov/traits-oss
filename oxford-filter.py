@@ -14,10 +14,15 @@ def read_prompt(filename):
         return f.read()
 
 def create_batches(words, batch_size=500, overlap=250):
-    """Create overlapping batches of words"""
+    """Create overlapping batches of words with extra first and last batches"""
     batches = []
-    start = 0
     
+    # First batch: 1 to 250
+    if len(words) > 0:
+        batches.append(words[:250])
+    
+    # Regular batches starting from 1 to 500, then 251 to 750, etc.
+    start = 0
     while start < len(words):
         end = min(start + batch_size, len(words))
         batch = words[start:end]
@@ -28,34 +33,37 @@ def create_batches(words, batch_size=500, overlap=250):
             
         start += (batch_size - overlap)
     
+    # Extra last batch: last (batch_size - overlap) words
+    if len(words) > 250:
+        batches.append(words[-(batch_size - overlap):])
+    
     return batches
 
-def send_to_nova(prompt, region='us-east-1'):
-    """Send prompt to Amazon Nova Pro via inference profile and return response"""
+def send_to_claude(prompt, region='us-east-1'):
+    """Send prompt to Claude 3.5 Sonnet v2 and return response"""
     client = boto3.client('bedrock-runtime', region_name=region)
     
     try:
         body = json.dumps({
+            "anthropic_version": "bedrock-2023-05-31",
+            "max_tokens": 4000,
+            "temperature": 0.1,
             "messages": [
                 {
                     "role": "user",
-                    "content": [{"text": prompt}]
+                    "content": prompt
                 }
-            ],
-            "inferenceConfig": {
-                "maxTokens": 4000,
-                "temperature": 0.1
-            }
+            ]
         })
         
         response = client.invoke_model(
-            modelId='us.amazon.nova-pro-v1:0',
+            modelId='us.anthropic.claude-3-5-sonnet-20241022-v2:0',
             body=body,
             contentType='application/json'
         )
         
         result = json.loads(response['body'].read().decode('utf-8'))
-        return result['output']['message']['content'][0]['text']
+        return result['content'][0]['text']
     
     except Exception as e:
         return f"Error: {str(e)}"
@@ -84,8 +92,8 @@ def main():
         words_text = '\n'.join(batch)
         full_prompt = base_prompt + words_text
         
-        # Send to Nova Pro
-        response = send_to_nova(full_prompt)
+        # Send to Claude 3.5 Sonnet v2
+        response = send_to_claude(full_prompt)
         
         print(f"Response for batch {i}:")
         print(response)
