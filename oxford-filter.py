@@ -14,28 +14,27 @@ def read_prompt(filename):
         return f.read()
 
 def create_batches(words, batch_size=500, overlap=250):
-    """Create overlapping batches of words with extra first and last batches"""
+    """Create overlapping batches with gradual build-up pattern"""
     batches = []
+    n = len(words)
+    step = batch_size - overlap
     
-    # First batch: 1 to 250
-    if len(words) > 0:
-        batches.append(words[:250])
+    # Build-up phase: gradually increase batch size
+    for i in range(step):
+        end = min(i + step, n)
+        if end > 0:
+            batches.append(words[:end])
     
-    # Regular batches starting from 1 to 500, then 251 to 750, etc.
+    # Full-size sliding phase
     start = 0
-    while start < len(words):
-        end = min(start + batch_size, len(words))
-        batch = words[start:end]
-        batches.append(batch)
-        
-        if end >= len(words):
-            break
-            
-        start += (batch_size - overlap)
+    while start + batch_size <= n:
+        batches.append(words[start:start + batch_size])
+        start += step
     
-    # Extra last batch: last (batch_size - overlap) words
-    if len(words) > 250:
-        batches.append(words[-(batch_size - overlap):])
+    # Wind-down phase: remaining elements
+    while start < n:
+        batches.append(words[start:n])
+        start += step
     
     return batches
 
