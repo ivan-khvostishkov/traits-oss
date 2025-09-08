@@ -72,7 +72,7 @@ def send_to_claude(prompt, region='us-east-1'):
 def parse_traits(response_text, original_words, logger):
     """Parse traits from model response and filter against original words"""
     # Pattern to match trait lines
-    pattern = r'^([A-Z]+)\s*-\s*@(positive|negative)@(?:\s*\((.+)\))?'
+    pattern = r'^([A-Z-]+)\s*-\s*@(positive|negative)@(?:\s*\((.+)\))?'
     
     traits = []
     original_lower = set(word.lower() for word in original_words)
