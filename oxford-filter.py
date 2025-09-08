@@ -1,6 +1,8 @@
 import boto3
 import json
 import time
+import logging
+import sys
 
 def read_words(filename):
     """Read words from oxford-words.txt file"""
@@ -66,26 +68,40 @@ def send_to_claude(prompt, region='us-east-1'):
     except Exception as e:
         return f"Error: {str(e)}"
 
+def setup_logging():
+    """Setup logging to both console and file"""
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(message)s',
+        handlers=[
+            logging.FileHandler('oxford-filter.log'),
+            logging.StreamHandler(sys.stdout)
+        ]
+    )
+    return logging.getLogger(__name__)
+
 def main():
+    logger = setup_logging()
+    
     # Read input files
     words = read_words('oxford-words.txt')
     base_prompt = read_prompt('prompt4.txt')
     
-    print(f"Total words: {len(words)}")
+    logger.info(f"Total words: {len(words)}")
     
     # Create overlapping batches
     batches = create_batches(words)
-    print(f"Created {len(batches)} batches")
+    logger.info(f"Created {len(batches)} batches")
     
     # Log last batch info
     last_batch = batches[-1]
     last_5_words = last_batch[-5:] if len(last_batch) >= 5 else last_batch
-    print(f"Last batch - size: {len(last_batch)}, last 5 words: {', '.join(last_5_words)}")
+    logger.info(f"Last batch - size: {len(last_batch)}, last 5 words: {', '.join(last_5_words)}")
     
     # Process each batch
     for i, batch in enumerate(batches, 1):
-        print(f"\nProcessing batch {i}/{len(batches)} ({len(batch)} words)")
-        print(f"Words in batch: {', '.join(batch)}")
+        logger.info(f"\nProcessing batch {i}/{len(batches)} ({len(batch)} words)")
+        logger.info(f"Words in batch: {', '.join(batch)}")
         
         # Create prompt with current batch
         words_text = '\n'.join(batch)
@@ -94,9 +110,9 @@ def main():
         # Send to Claude 3.5 Sonnet v2
         response = send_to_claude(full_prompt)
         
-        print(f"Response for batch {i}:")
-        print(response)
-        print("-" * 80)
+        logger.info(f"Response for batch {i}:")
+        logger.info(response)
+        logger.info("-" * 80)
         
         # Add delay to avoid rate limiting
         if i < len(batches):
