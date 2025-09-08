@@ -104,6 +104,15 @@ def print_structured_traits(traits, logger):
         else:
             logger.info(f"{trait['trait']} - @{trait['polarity']}@")
 
+def append_traits_to_file(traits, filename='oxford-traits.txt'):
+    """Append structured traits to file"""
+    with open(filename, 'a', encoding='utf-8') as f:
+        for trait in traits:
+            if trait['comment']:
+                f.write(f"{trait['trait']} - @{trait['polarity']}@ ({trait['comment']})\n")
+            else:
+                f.write(f"{trait['trait']} - @{trait['polarity']}@\n")
+
 def setup_logging():
     """Setup logging to both console and file"""
     logging.basicConfig(
@@ -152,6 +161,7 @@ def main():
         # Post-process the response
         traits = parse_traits(response, batch, logger)
         print_structured_traits(traits, logger)
+        append_traits_to_file(traits)
         
         logger.info("-" * 80)
         
