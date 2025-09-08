@@ -4,6 +4,8 @@ import time
 import logging
 import sys
 import re
+import sqlite3
+import hashlib
 
 def read_words(filename):
     """Read words from oxford-words.txt file"""
@@ -113,6 +115,36 @@ def append_traits_to_file(traits, filename='oxford-traits.txt'):
             else:
                 f.write(f"{trait['trait']} - @{trait['polarity']}@\n")
 
+def init_batch_db():
+    """Initialize SQLite database for tracking processed batches"""
+    conn = sqlite3.connect('oxford-batches.db')
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS processed_batches (
+            batch_hash TEXT PRIMARY KEY,
+            batch_number INTEGER,
+            processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+    return conn
+
+def get_batch_hash(batch):
+    """Generate hash for batch to identify it uniquely"""
+    return hashlib.md5('|'.join(sorted(batch)).encode()).hexdigest()
+
+def is_batch_processed(conn, batch):
+    """Check if batch was already processed"""
+    batch_hash = get_batch_hash(batch)
+    cursor = conn.execute('SELECT 1 FROM processed_batches WHERE batch_hash = ?', (batch_hash,))
+    return cursor.fetchone() is not None
+
+def mark_batch_processed(conn, batch, batch_number):
+    """Mark batch as processed in database"""
+    batch_hash = get_batch_hash(batch)
+    conn.execute('INSERT OR REPLACE INTO processed_batches (batch_hash, batch_number) VALUES (?, ?)', 
+                 (batch_hash, batch_number))
+    conn.commit()
+
 def setup_logging():
     """Setup logging to both console and file"""
     logging.basicConfig(
@@ -127,6 +159,7 @@ def setup_logging():
 
 def main():
     logger = setup_logging()
+    conn = init_batch_db()
     
     # Read input files
     words = read_words('oxford-words.txt')
@@ -145,6 +178,10 @@ def main():
     
     # Process each batch
     for i, batch in enumerate(batches, 1):
+        if is_batch_processed(conn, batch):
+            logger.info(f"\nSkipping batch {i}/{len(batches)} - already processed")
+            continue
+            
         logger.info(f"\nProcessing batch {i}/{len(batches)} ({len(batch)} words)")
         logger.info(f"Words in batch: {', '.join(batch)}")
         
@@ -163,11 +200,16 @@ def main():
         print_structured_traits(traits, logger)
         append_traits_to_file(traits)
         
+        # Mark batch as processed
+        mark_batch_processed(conn, batch, i)
+        
         logger.info("-" * 80)
         
         # Add delay to avoid rate limiting
         if i < len(batches):
             time.sleep(2)
+    
+    conn.close()
 
 if __name__ == "__main__":
     main()
