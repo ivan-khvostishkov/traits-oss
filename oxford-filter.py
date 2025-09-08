@@ -3,6 +3,7 @@ import json
 import time
 import logging
 import sys
+import re
 
 def read_words(filename):
     """Read words from oxford-words.txt file"""
@@ -68,6 +69,41 @@ def send_to_claude(prompt, region='us-east-1'):
     except Exception as e:
         return f"Error: {str(e)}"
 
+def parse_traits(response_text, original_words, logger):
+    """Parse traits from model response and filter against original words"""
+    # Pattern to match trait lines
+    pattern = r'^([A-Z]+)\s*-\s*@(positive|negative)@(?:\s*\((.+)\))?'
+    
+    traits = []
+    original_lower = set(word.lower() for word in original_words)
+    
+    for line in response_text.split('\n'):
+        line = line.strip()
+        match = re.match(pattern, line)
+        if match:
+            trait, polarity, comment = match.groups()
+            
+            # Check if trait exists in original batch
+            if trait.lower() in original_lower:
+                traits.append({
+                    'trait': trait,
+                    'polarity': polarity,
+                    'comment': comment.strip() if comment else None
+                })
+            else:
+                logger.info(f"Removed trait not in original batch: {trait}")
+    
+    return traits
+
+def print_structured_traits(traits, logger):
+    """Print structured list of traits"""
+    logger.info("\nStructured traits:")
+    for trait in traits:
+        if trait['comment']:
+            logger.info(f"{trait['trait']} - @{trait['polarity']}@ ({trait['comment']})")
+        else:
+            logger.info(f"{trait['trait']} - @{trait['polarity']}@")
+
 def setup_logging():
     """Setup logging to both console and file"""
     logging.basicConfig(
@@ -110,8 +146,13 @@ def main():
         # Send to Claude 3.5 Sonnet v2
         response = send_to_claude(full_prompt)
         
-        logger.info(f"Response for batch {i}:")
+        logger.info(f"Raw response for batch {i}:")
         logger.info(response)
+        
+        # Post-process the response
+        traits = parse_traits(response, batch, logger)
+        print_structured_traits(traits, logger)
+        
         logger.info("-" * 80)
         
         # Add delay to avoid rate limiting
