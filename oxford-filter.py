@@ -13,17 +13,16 @@ def read_prompt(filename):
     with open(filename, 'r', encoding='utf-8') as f:
         return f.read()
 
-def create_batches(words, batch_size=500, overlap=250):
+def create_batches(words, batch_size=600, overlap=400):
     """Create overlapping batches with gradual build-up pattern"""
     batches = []
     n = len(words)
     step = batch_size - overlap
     
     # Build-up phase: gradually increase batch size
-    for i in range(step):
-        end = min(i + step, n)
-        if end > 0:
-            batches.append(words[:end])
+    for size in range(step, batch_size, step):
+        if size <= n:
+            batches.append(words[:size])
     
     # Full-size sliding phase
     start = 0
@@ -86,6 +85,7 @@ def main():
     # Process each batch
     for i, batch in enumerate(batches, 1):
         print(f"\nProcessing batch {i}/{len(batches)} ({len(batch)} words)")
+        print(f"Words in batch: {', '.join(batch)}")
         
         # Create prompt with current batch
         words_text = '\n'.join(batch)
