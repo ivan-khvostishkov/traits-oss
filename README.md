@@ -1,5 +1,18 @@
 # Traits by NoSocial.Net
-**Traits by NoSocial.Net** (also known as NSN Traits v2.0) is a daily assistant in learning a personality. Answer as many questions as possible to get the personal profile of positive and negative traits. See running instrucitons for more details. 
+**Traits by NoSocial.Net** (also known as NSN Traits v2.0) is a daily assistant in learning a personality. Answer as many questions as possible to get the personal profile of the positive and negative traits.  
+
+* Self awareness
+  * Learn about behaviors, discover your traits and develop emotional intelligence
+
+* Dealing with people
+  * The more self-aware you are, the more skilled you are at reading personality of others
+
+* A key to life success
+  * Use Traits by NoSocial.Net day by day and watch how your life becomes easier and successful
+
+### Oxford Traits DB
+
+The database of about 500 traits based on careful filtering from approx. 500,000 words of the Oxford Dictionary.
 
 ### Building
 1. Get Apache Ant — https://ant.apache.org/bindownload.cgi 
@@ -8,7 +21,7 @@
 $ ant
 ```
 
-### Running
+### Running & using
 ```
 $ java -jar traits.jar
 Welcome to NSN Traits v2.0 - your daily assistant in learning a personality!
