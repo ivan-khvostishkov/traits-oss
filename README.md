@@ -12,7 +12,9 @@
 
 ### Oxford Traits DB
 
-The database of about 500 traits based on careful filtering from approx. 500,000 words of the Oxford Dictionary.
+The database of 800+ traits based on careful filtering of the Oxford dictionary.
+
+**Fun fact:** In the Oxford dictionary, out of approx. 500,000 words, there are almost twice as many words describing negative traits than positive ones (around 540 vs 300). This reflects the psychological phenomenon known as negativity bias.
 
 ### Building
 1. Get Apache Ant — https://ant.apache.org/bindownload.cgi 
